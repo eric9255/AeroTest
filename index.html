@@ -3,147 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>航空特考全方位特訓</title>
+    <title>航空職涯全方位特訓中心</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            /* 專業配色：深岩灰 + 航空藍 */
-            --sidebar-bg: #1e272e; --sidebar-text: #bdc3c7;
-            --main-bg: #ecf0f1; --primary: #2c3e50; 
-            --accent: #3498db; --accent-dark: #2980b9;
-            --error: #e74c3c; --success: #27ae60;
-            --text: #2c3e50; --header-height: 60px;
+            /* 整合版配色：深空藍 (筆試) + 跑道灰 (面試) + 金色 (榮耀) */
+            --sidebar-bg: #1c2331; 
+            --sidebar-header: #0d1117;
+            --main-bg: #f4f5f7;
+            --exam-color: #2c3e50; /* 筆試主色 */
+            --interview-color: #c0392b; /* 面試主色 (熱情/緊急) */
+            --tech-color: #2980b9; /* 技術主色 */
+            --text: #333;
+            --accent: #f1c40f;
         }
 
+        /* 核心設定：鎖定頁面，適合平板 */
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; position: fixed;
-            font-family: "Microsoft JhengHei", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
             background: var(--main-bg); color: var(--text);
         }
-        
-        .layout { display: flex; width: 100%; height: 100%; position: relative; }
-        .overlay-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 90; display: none; }
 
-        /* Sidebar */
+        .layout { display: flex; width: 100%; height: 100%; position: relative; }
+        .overlay-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 90; display: none; }
+
+        /* --- Sidebar --- */
         .sidebar {
-            width: 260px; background: var(--sidebar-bg); color: var(--sidebar-text);
-            display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0;
+            width: 260px; background: var(--sidebar-bg); color: #bdc3c7;
+            display: flex; flex-direction: column; padding: 0; flex-shrink: 0;
             z-index: 100; transition: transform 0.3s ease;
             overflow-y: auto; -webkit-overflow-scrolling: touch;
         }
         .sidebar-header { 
-            text-align: center; margin-bottom: 20px; font-size: 1.1rem; 
-            border-bottom: 1px solid #34495e; padding-bottom: 15px; font-weight: bold; flex-shrink: 0; 
-            color: #fff; letter-spacing: 1px;
+            padding: 25px 20px; background: var(--sidebar-header); text-align: center;
+            font-weight: bold; font-size: 1.1rem; color: #fff; letter-spacing: 1px; border-bottom: 1px solid #34495e;
         }
-        .nav-item { padding: 15px 25px; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; flex-shrink: 0; font-size: 0.95rem; }
-        .nav-item:hover { background: #34495e; color: #fff; }
-        .nav-item.active { background: #2c3e50; border-left-color: var(--accent); color: #fff; font-weight: bold; }
+        .section-title {
+            padding: 15px 20px 5px; font-size: 0.75rem; text-transform: uppercase; 
+            color: #5d6d7e; font-weight: bold; letter-spacing: 1px; margin-top: 10px;
+        }
+        .nav-item { 
+            padding: 12px 20px; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; 
+            font-size: 0.9rem; display: flex; align-items: center; 
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-item.active { background: rgba(255,255,255,0.1); color: #fff; font-weight: bold; }
         
-        .api-area { margin-top: auto; padding: 20px; font-size: 0.85rem; flex-shrink: 0; }
-        .api-input { width: 100%; padding: 10px; border-radius: 4px; border: none; margin-top: 8px; box-sizing: border-box; background: #34495e; color: white; }
+        /* 不同模式的 Active 顏色 */
+        .nav-item.exam-active { border-left-color: var(--accent); }
+        .nav-item.interview-active { border-left-color: var(--interview-color); }
+        
+        .api-area { padding: 20px; margin-top: auto; border-top: 1px solid #34495e; }
+        .api-input { width: 100%; padding: 10px; border-radius: 4px; border: none; background: #0d1117; color: white; border: 1px solid #34495e; }
 
-        /* Main Content */
+        /* --- Main Content --- */
         .main-content {
             flex: 1; display: flex; flex-direction: column; width: 100%;
             position: relative; overflow: hidden;
         }
         
         .top-bar {
-            background: #fff; height: var(--header-height); padding: 0 20px;
-            border-bottom: 1px solid #bdc3c7; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+            background: #fff; height: 60px; padding: 0 20px;
+            border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
         }
-        .menu-btn { display: none; font-size: 24px; cursor: pointer; background: none; border: none; padding: 5px; color: #333; }
+        .menu-btn { display: none; font-size: 24px; cursor: pointer; border: none; background: none; color: #333; margin-right: 10px; }
+        
+        .mode-badge {
+            padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; color: white; margin-left: 10px;
+        }
 
         /* Tabs */
         .category-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
         .category-tabs button {
-            background: #fff; border: 1px solid #bdc3c7; padding: 6px 16px;
-            cursor: pointer; border-radius: 4px; font-size: 0.9rem; white-space: nowrap; transition: 0.2s; color: #7f8c8d;
+            background: #fff; border: 1px solid #bdc3c7; padding: 6px 14px;
+            cursor: pointer; border-radius: 4px; font-size: 0.9rem; white-space: nowrap; transition: 0.2s; color: #555;
         }
-        .category-tabs button.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .category-tabs button.essay-mode.active { background: #d35400; border-color: #d35400; color: white; } /* 申論模式-橘色 */
-        .category-tabs button.stats-mode.active { background: var(--accent); border-color: var(--accent); color: white; }
+        .category-tabs button.active { background: var(--exam-color); color: white; border-color: var(--exam-color); }
+        /* 面試模式下的 Tab 顏色 */
+        .interview-mode .category-tabs button.active { background: var(--interview-color); border-color: var(--interview-color); }
 
         /* Scroll Container */
         .scroll-container {
             flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-            padding: 20px; padding-bottom: 50px; overscroll-behavior: contain;
+            padding: 20px; padding-bottom: 80px; overscroll-behavior: contain;
         }
 
-        /* MCQ Grid */
-        .drill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        /* --- View: Exam (Grid) --- */
+        .drill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
         .drill-card {
-            background: white; border-radius: 6px; padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer;
-            border-top: 4px solid transparent; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; justify-content: space-between; height: 120px;
+            background: white; border-radius: 8px; padding: 20px; cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-top: 4px solid transparent;
+            display: flex; flex-direction: column; justify-content: space-between; height: 110px;
             transition: transform 0.2s;
         }
-        .drill-card:hover { transform: translateY(-2px); border-top-color: var(--accent); }
-        .progress-bar-bg { width: 100%; height: 4px; background: #ecf0f1; border-radius: 2px; margin-top: auto; }
-        .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+        .drill-card:hover { transform: translateY(-3px); border-top-color: var(--accent); }
+        .progress-bar-bg { width: 100%; height: 4px; background: #eee; margin-top: auto; border-radius: 2px; overflow:hidden; }
+        .progress-bar-fill { height: 100%; background: #27ae60; width: 0%; }
 
-        /* Essay List & Card */
-        .essay-container { display: none; }
-        .essay-card {
-            background: white; border-radius: 8px; padding: 20px; margin-bottom: 15px;
-            border-left: 5px solid #d35400; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer;
+        /* --- View: Interview (Card) --- */
+        .interview-view { max-width: 800px; margin: 0 auto; display: none; }
+        .question-card {
+            background: white; border-radius: 8px; padding: 30px; text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 5px solid var(--interview-color);
         }
-        .essay-card h3 { margin: 0 0 10px 0; font-size: 1.1rem; color: #2c3e50; }
-        .essay-meta { font-size: 0.85rem; color: #7f8c8d; display: flex; justify-content: space-between; }
-        .score-badge { background: #e67e22; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
-
-        /* RWD */
-        @media (max-width: 768px) {
-            .sidebar { position: fixed; height: 100%; left: -260px; top: 0; box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
-            .sidebar.open { transform: translateX(260px); }
-            .overlay-backdrop.open { display: block; }
-            .menu-btn { display: block; margin-right: 10px; }
-            .drill-grid { grid-template-columns: 1fr; gap: 15px; }
+        .q-text { font-size: 1.3rem; font-weight: bold; margin: 20px 0; color: #333; font-family: "Georgia", serif; }
+        .action-btn {
+            background: var(--exam-color); color: white; border: none; padding: 12px 25px;
+            border-radius: 30px; font-size: 1rem; cursor: pointer; font-weight: bold;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
         }
+        .action-btn.interview-btn { background: var(--interview-color); }
+        
+        .answer-section { background: white; border-radius: 8px; padding: 20px; display: none; margin-top: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .input-box { width: 100%; height: 150px; padding: 15px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; margin-bottom: 10px; font-size: 1rem; box-sizing: border-box; }
+        
+        .feedback-box { background: #fff; border-left: 4px solid var(--accent); padding: 20px; margin-top: 20px; display: none; line-height: 1.6; }
 
-        /* Overlay (MCQ & Essay) */
+        /* --- Common Elements --- */
+        .loading-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95); display: none;
+            justify-content: center; align-items: center; z-index: 200; flex-direction: column;
+        }
+        .spinner { width: 40px; height: 40px; border: 4px solid #ddd; border-top-color: var(--exam-color); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        
+        /* Quiz Overlay (Exam) */
         .quiz-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #f8f9fa; z-index: 200; display: none; flex-direction: column;
         }
         .quiz-overlay.active { display: flex; animation: slideUp 0.3s ease-out; }
-        .quiz-header { padding: 0 20px; height: 60px; border-bottom: 1px solid #bdc3c7; display: flex; align-items: center; justify-content: space-between; background: #fff; flex-shrink: 0; }
-        .quiz-body { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 80px; -webkit-overflow-scrolling: touch; }
+        .quiz-header { padding: 0 20px; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .quiz-body { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; padding-bottom: 80px; }
+        .q-box { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .opt-btn { width: 100%; text-align: left; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; background: white; border-radius: 6px; }
+        .opt-btn.correct { background: #d4edda; border-color: #27ae60; }
+        .opt-btn.wrong { background: #f8d7da; border-color: #c0392b; }
+        .explanation { background: #e8f4fd; padding: 15px; margin-top: 10px; border-radius: 6px; display: none; }
+        
+        /* Essay Overlay */
+        .essay-container { display: none; }
+        .essay-card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #d35400; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
-        /* Essay Editing Area */
-        .essay-question-box { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px; font-weight: bold; line-height: 1.6; }
-        .essay-input {
-            width: 100%; height: 300px; padding: 15px; box-sizing: border-box;
-            border: 1px solid #bdc3c7; border-radius: 8px; font-size: 1rem; line-height: 1.6;
-            font-family: inherit; resize: none; margin-bottom: 20px;
-        }
-        .submit-btn {
-            width: 100%; padding: 15px; background: #d35400; color: white; border: none; border-radius: 6px;
-            font-size: 1.1rem; font-weight: bold; cursor: pointer;
-        }
-        .submit-btn:disabled { background: #bdc3c7; cursor: not-allowed; }
-
-        /* Grading Result */
-        .grading-result { display: none; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .grade-score { font-size: 2rem; color: #d35400; font-weight: bold; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .grade-section { margin-bottom: 20px; }
-        .grade-section h4 { color: #2c3e50; border-left: 4px solid #d35400; padding-left: 10px; margin-bottom: 10px; }
-        .model-answer { background: #fdf2e9; padding: 15px; border-radius: 6px; color: #555; white-space: pre-wrap; line-height: 1.6; }
-
-        /* MCQ Styles */
-        .q-box { background: white; padding: 25px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; }
-        .opt-btn { width: 100%; text-align: left; padding: 16px 20px; margin-bottom: 12px; border: 1px solid #bdc3c7; background: #fff; border-radius: 6px; cursor: pointer; }
-        .opt-btn.correct { background: #d1e7dd; border-color: #198754; color: #0f5132; }
-        .opt-btn.wrong { background: #f8d7da; border-color: #e74c3c; color: #721c24; }
-        .explanation { margin-top: 20px; padding: 15px; background: #e8f4fd; border-radius: 6px; display: none; }
-
-        .loading-screen { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); display:none; justify-content:center; align-items:center; z-index: 300; flex-direction: column; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #ecf0f1; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; height: 100%; left: -260px; top: 0; }
+            .sidebar.open { transform: translateX(260px); }
+            .overlay-backdrop.open { display: block; }
+            .menu-btn { display: block; }
+        }
     </style>
 </head>
 <body>
@@ -152,83 +163,100 @@
     <div class="overlay-backdrop" onclick="toggleSidebar()"></div>
 
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">✈️ 航空特考・全方位</div>
-        <div class="nav-item active" onclick="changeSubject('民用航空法', this)">民用航空法</div>
-        <div class="nav-item" onclick="changeSubject('飛航管制', this)">飛航管制概要</div>
-        <div class="nav-item" onclick="changeSubject('航空氣象學', this)">航空氣象學</div>
-        <div class="nav-item" onclick="changeSubject('空氣動力學', this)">空氣動力學</div>
+        <div class="sidebar-header">✈️ 航空職涯特訓</div>
         
+        <!-- 筆試區塊 -->
+        <div class="section-title">📝 航空特考 (筆試)</div>
+        <div class="nav-item exam-active active" onclick="switchMode('exam', '民用航空法', this)">民用航空法</div>
+        <div class="nav-item exam-active" onclick="switchMode('exam', '飛航管制', this)">飛航管制</div>
+        <div class="nav-item exam-active" onclick="switchMode('exam', '航空氣象學', this)">航空氣象學</div>
+        <div class="nav-item exam-active" onclick="switchMode('exam', '空氣動力學', this)">空氣動力學</div>
+
+        <!-- 面試區塊 -->
+        <div class="section-title">🎙️ 職位面試 (口試)</div>
+        <div class="nav-item interview-active" onclick="switchMode('interview', 'Cabin Crew', this)">💃 空服員 (Cabin)</div>
+        <div class="nav-item interview-active" onclick="switchMode('interview', 'Ground Staff', this)">🎫 地勤 (Ground)</div>
+        <div class="nav-item interview-active" onclick="switchMode('interview', 'Pilot', this)">👨‍✈️ 機師 (Pilot)</div>
+        <div class="nav-item interview-active" onclick="switchMode('interview', 'Engineer', this)">🛠️ 工程師 (Tech)</div>
+
         <div class="api-area">
-            <label style="font-weight:bold;">🔑 API Key</label>
+            <label style="color:#7f8c8d; font-size:0.8rem; font-weight:bold;">API Key</label>
             <input type="password" id="api-key" class="api-input" placeholder="sk-..." onchange="saveKey()">
         </div>
     </aside>
 
-    <main class="main-content">
+    <main class="main-content" id="main-content">
         <div class="top-bar">
             <div style="display:flex; align-items:center;">
                 <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-                <h3 id="current-title" style="margin:0; font-size:1.1rem; margin-left:10px;">民用航空法</h3>
+                <div>
+                    <h3 id="top-title" style="margin:0; font-size:1.1rem; display:inline-block;">民用航空法</h3>
+                    <span id="mode-badge" class="mode-badge" style="background:var(--exam-color)">筆試模式</span>
+                </div>
             </div>
-            <div class="category-tabs">
-                <button class="active" onclick="changeType('mcq', this)">選擇題刷題</button>
-                <button class="essay-mode" onclick="changeType('essay', this)">✍️ 申論演練</button>
-                <button class="mistake-mode" onclick="changeType('mistake', this)">🔥 錯題本</button>
+            
+            <!-- Dynamic Tabs -->
+            <div class="category-tabs" id="tabs-container">
+                <!-- Javascript will inject buttons here -->
             </div>
         </div>
 
         <div class="scroll-container">
-            <!-- 1. 選擇題列表 -->
-            <div id="drill-list" class="drill-grid"></div>
-            <!-- 2. 申論題列表 -->
-            <div id="essay-list" class="essay-container">
-                <button onclick="createNewEssay()" style="width:100%; padding:15px; margin-bottom:20px; background:white; border:2px dashed #bdc3c7; color:#7f8c8d; border-radius:8px; cursor:pointer; font-weight:bold;">+ 產生新的申論題目</button>
-                <div id="essay-history-container"></div>
+            
+            <!-- 1. 筆試介面 (Grid) -->
+            <div id="exam-view" style="display:block;">
+                <div id="drill-list" class="drill-grid"></div>
+                <div id="essay-list" class="essay-container">
+                    <button onclick="createEssay()" style="width:100%; padding:15px; margin-bottom:20px; background:white; border:2px dashed #999; color:#555; border-radius:8px; font-weight:bold;">+ 產生新申論題</button>
+                    <div id="essay-history"></div>
+                </div>
             </div>
-            <!-- 3. 錯題與分析 (省略分析圖表以簡化，可自行加回) -->
-            <div id="mistake-list" class="mistake-container" style="display:none;"></div>
+
+            <!-- 2. 面試介面 (Card) -->
+            <div id="interview-view" class="interview-view" style="display:none;">
+                <div class="question-card">
+                    <div style="color:#999; font-size:0.9rem; margin-bottom:10px;" id="interview-q-type">READY?</div>
+                    <div class="q-text" id="interview-q-text">請點擊下方按鈕，開始模擬面試。</div>
+                    <button class="action-btn interview-btn" onclick="generateInterviewQ()">🎲 抽取題目</button>
+                </div>
+
+                <div id="interview-answer-box" class="answer-section">
+                    <h4 style="margin-top:0;">Your Answer (Draft/Notes)</h4>
+                    <textarea id="interview-input" class="input-box" placeholder="Type or use voice input..."></textarea>
+                    <div style="display:flex; gap:10px;">
+                        <button class="action-btn interview-btn" onclick="analyzeInterview()">✨ 提交分析</button>
+                        <button class="action-btn" style="background:#fff; color:#333; border:1px solid #ccc;" onclick="startVoice()">🎙️ 語音</button>
+                    </div>
+                    <div id="interview-feedback" class="feedback-box"></div>
+                </div>
+            </div>
+
         </div>
 
-        <div id="loading" class="loading-screen">
+        <!-- Overlays -->
+        <div id="loading" class="loading-overlay">
             <div class="spinner"></div>
-            <p id="loading-text" style="margin-top:20px; color:#555; font-weight:bold;">AI 導師運算中...</p>
+            <p id="loading-text" style="margin-top:20px; font-weight:bold; color:#555;">AI 正在準備試題...</p>
         </div>
 
-        <!-- 選擇題 Overlay -->
-        <div id="quiz-view" class="quiz-overlay">
+        <div id="quiz-overlay" class="quiz-overlay">
             <div class="quiz-header">
-                <h3>模擬試卷</h3>
-                <button onclick="closeOverlay('quiz-view')" style="font-size:1.5rem; background:none; border:none; color:#555;">✕</button>
+                <h3 id="quiz-title">模擬測驗</h3>
+                <button onclick="closeOverlay('quiz-overlay')" style="font-size:1.5rem; background:none; border:none;">✕</button>
             </div>
             <div id="quiz-body" class="quiz-body"></div>
         </div>
-
-        <!-- 申論題 Overlay -->
-        <div id="essay-view" class="quiz-overlay">
+        
+        <div id="essay-overlay" class="quiz-overlay">
             <div class="quiz-header">
-                <h3>申論題模擬</h3>
-                <button onclick="closeOverlay('essay-view')" style="font-size:1.5rem; background:none; border:none; color:#555;">✕</button>
+                <h3>申論閱卷</h3>
+                <button onclick="closeOverlay('essay-overlay')" style="font-size:1.5rem; background:none; border:none;">✕</button>
             </div>
             <div id="essay-body" class="quiz-body">
-                <div id="essay-q-text" class="essay-question-box"></div>
-                <!-- 輸入區 -->
-                <div id="essay-input-area">
-                    <textarea id="essay-user-input" class="essay-input" placeholder="請在此作答... (系統將進行AI閱卷)"></textarea>
-                    <button class="submit-btn" onclick="submitEssay()">提交閱卷 📝</button>
-                </div>
-                <!-- 閱卷結果區 -->
-                <div id="grading-result" class="grading-result">
-                    <div class="grade-score">得分：<span id="score-val">--</span> / 25</div>
-                    <div class="grade-section">
-                        <h4>👨‍🏫 評語與建議</h4>
-                        <div id="grade-comment" style="color:#555; line-height:1.6;"></div>
-                    </div>
-                    <div class="grade-section">
-                        <h4>💡 參考擬答</h4>
-                        <div id="grade-model" class="model-answer"></div>
-                    </div>
-                    <button onclick="closeOverlay('essay-view')" style="width:100%; padding:12px; border:1px solid #ddd; background:#f8f9fa; border-radius:6px; margin-top:20px;">關閉並儲存</button>
-                </div>
+                <div class="q-box" style="font-weight:bold;" id="essay-q-display"></div>
+                <textarea id="essay-input" class="input-box" style="height:300px;" placeholder="作答區..."></textarea>
+                <button class="action-btn" style="width:100%;" onclick="submitEssay()">提交閱卷</button>
+                <div id="essay-result" class="feedback-box" style="display:none;"></div>
             </div>
         </div>
 
@@ -236,262 +264,386 @@
 </div>
 
 <script>
-    let currentSubject = '民用航空法';
-    let currentType = 'mcq'; // mcq, essay, mistake
-    let drillCache = {};
-    let essayBook = []; // 申論題紀錄
-    let mistakeBook = [];
+    // --- State Management ---
+    let appState = {
+        mode: 'exam', // 'exam' or 'interview'
+        target: '民用航空法', // Subject or Role
+        subType: 'basic', // 'basic'/'advanced' or 'behavioral'/'technical'
+    };
 
-    const STORAGE_PREFIX = 'aviation_pro_';
+    let dataStore = {
+        examCache: {},
+        examEssays: [],
+        interviewHistory: []
+    };
 
+    const STORAGE_KEY = 'aviation_hub_data';
+
+    // --- Init ---
     window.onload = function() {
-        const key = localStorage.getItem('jlpt_api_key'); 
+        const key = localStorage.getItem('jlpt_api_key');
         if(key) document.getElementById('api-key').value = key;
-        loadData();
-        renderDrillList();
-    }
-
-    function loadData() {
-        const savedDrills = localStorage.getItem(STORAGE_PREFIX + 'drills');
-        if(savedDrills) drillCache = JSON.parse(savedDrills);
         
-        const savedEssays = localStorage.getItem(STORAGE_PREFIX + 'essays');
-        if(savedEssays) essayBook = JSON.parse(savedEssays);
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if(savedData) dataStore = JSON.parse(savedData);
 
-        const savedMistakes = localStorage.getItem(STORAGE_PREFIX + 'mistakes');
-        if(savedMistakes) mistakeBook = JSON.parse(savedMistakes);
+        renderTabs();
+        renderContent();
     }
 
-    function saveData() {
-        localStorage.setItem(STORAGE_PREFIX + 'drills', JSON.stringify(drillCache));
-        localStorage.setItem(STORAGE_PREFIX + 'essays', JSON.stringify(essayBook));
-        localStorage.setItem(STORAGE_PREFIX + 'mistakes', JSON.stringify(mistakeBook));
-    }
-
-    function toggleSidebar() {
+    function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(dataStore)); }
+    function saveKey() { localStorage.setItem('jlpt_api_key', document.getElementById('api-key').value.trim()); }
+    function toggleSidebar() { 
         document.getElementById('sidebar').classList.toggle('open');
         document.querySelector('.overlay-backdrop').classList.toggle('open');
     }
-    function saveKey() { localStorage.setItem('jlpt_api_key', document.getElementById('api-key').value.trim()); }
 
-    function changeSubject(sub, btn) {
-        currentSubject = sub;
+    // --- Core Navigation ---
+    function switchMode(mode, target, btn) {
+        appState.mode = mode;
+        appState.target = target;
+        
+        // Update Sidebar UI
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         btn.classList.add('active');
-        updateView();
+
+        // Reset subType to default
+        appState.subType = (mode === 'exam') ? 'basic' : 'behavioral';
+        if(target === 'Engineer' && mode === 'interview') appState.subType = 'troubleshooting';
+
+        // Update Top Bar UI
+        document.getElementById('top-title').innerText = target;
+        const badge = document.getElementById('mode-badge');
+        badge.innerText = (mode === 'exam') ? '筆試模式' : '面試模式';
+        badge.style.background = (mode === 'exam') ? 'var(--exam-color)' : 'var(--interview-color)';
+        document.getElementById('main-content').className = (mode === 'interview') ? 'main-content interview-mode' : 'main-content';
+
+        renderTabs();
+        renderContent();
+        
         if(window.innerWidth <= 768) toggleSidebar();
     }
 
-    function changeType(type, btn) {
-        currentType = type;
+    function switchTab(type, btn) {
+        appState.subType = type;
         document.querySelectorAll('.category-tabs button').forEach(el => el.classList.remove('active'));
         btn.classList.add('active');
-        updateView();
+        renderContent();
     }
 
-    function updateView() {
-        document.getElementById('drill-list').style.display = 'none';
-        document.getElementById('essay-list').style.display = 'none';
-        document.getElementById('mistake-list').style.display = 'none';
-        document.getElementById('current-title').innerText = currentSubject;
-
-        if (currentType === 'essay') {
-            document.getElementById('essay-list').style.display = 'block';
-            renderEssayList();
-        } else if (currentType === 'mistake') {
-            document.getElementById('mistake-list').style.display = 'block';
-            renderMistakeList(); // 需實作錯題邏輯(略，沿用舊版邏輯)
-        } else {
-            document.getElementById('drill-list').style.display = 'grid';
-            renderDrillList();
-        }
-    }
-
-    // ================= MCQ 邏輯 (簡化版) =================
-    function renderDrillList() {
-        const container = document.getElementById('drill-list');
-        container.innerHTML = '';
-        for(let i=1; i<=10; i++) { // 10回範例
-            const key = `${currentSubject}-mcq-${i}`;
-            const data = drillCache[key];
-            const card = document.createElement('div');
-            card.className = 'drill-card';
-            let status = data ? "已生成" : "未開始";
-            card.innerHTML = `<div><h3>選擇題 第${i}回</h3><p style="color:#7f8c8d">基礎觀念測試</p></div><div style="font-size:0.8rem; color:#999; margin-top:auto;">${status}</div>`;
-            card.onclick = () => startMCQ(i);
-            container.appendChild(card);
-        }
-    }
-
-    async function startMCQ(round) {
-        // 類似之前的邏輯，省略以節省篇幅，專注於申論功能
-        // 這裡您可以直接貼上之前的 fetchNewQuestions 邏輯
-        alert("選擇題功能與前一版相同，為節省篇幅，請專注體驗「申論題」功能！");
-    }
-
-    // ================= ✍️ 申論題核心邏輯 =================
-
-    // 1. 渲染申論題列表
-    function renderEssayList() {
-        const container = document.getElementById('essay-history-container');
+    function renderTabs() {
+        const container = document.getElementById('tabs-container');
         container.innerHTML = '';
         
-        // 過濾當前科目的申論題
-        const myEssays = essayBook.filter(e => e.subject === currentSubject).reverse();
+        if (appState.mode === 'exam') {
+            const types = [
+                {id: 'basic', name: '基礎測驗'},
+                {id: 'advanced', name: '進階應用'},
+                {id: 'essay', name: '申論演練'}
+            ];
+            types.forEach(t => {
+                container.innerHTML += `<button class="${appState.subType === t.id ? 'active' : ''}" onclick="switchTab('${t.id}', this)">${t.name}</button>`;
+            });
+        } else {
+            // Interview Tabs
+            let types = [];
+            if (appState.target === 'Engineer') {
+                types = [
+                    {id: 'troubleshooting', name: '故障排除'},
+                    {id: 'knowledge', name: '系統知識'},
+                    {id: 'regulatory', name: '法規手冊'}
+                ];
+            } else {
+                types = [
+                    {id: 'behavioral', name: '行為情境 (STAR)'},
+                    {id: 'personal', name: '個人題'},
+                    {id: 'broadcast', name: '廣播詞/英文'}
+                ];
+            }
+            types.forEach(t => {
+                container.innerHTML += `<button class="${appState.subType === t.id ? 'active' : ''}" onclick="switchTab('${t.id}', this)">${t.name}</button>`;
+            });
+        }
+    }
 
-        myEssays.forEach(essay => {
-            const card = document.createElement('div');
-            card.className = 'essay-card';
-            const scoreDisplay = essay.grading ? `<span class="score-badge">${essay.grading.score}分</span>` : `<span style="color:#999">未作答</span>`;
+    function renderContent() {
+        const examView = document.getElementById('exam-view');
+        const interviewView = document.getElementById('interview-view');
+        const drillList = document.getElementById('drill-list');
+        const essayList = document.getElementById('essay-list');
+
+        if (appState.mode === 'exam') {
+            interviewView.style.display = 'none';
+            examView.style.display = 'block';
+
+            if (appState.subType === 'essay') {
+                drillList.style.display = 'none';
+                essayList.style.display = 'block';
+                renderEssayHistory();
+            } else {
+                drillList.style.display = 'grid';
+                essayList.style.display = 'none';
+                renderExamDrills();
+            }
+        } else {
+            examView.style.display = 'none';
+            interviewView.style.display = 'block';
             
+            // Reset Interview View text
+            document.getElementById('interview-q-type').innerText = `${appState.target} - ${appState.subType}`;
+            // document.getElementById('interview-q-text').innerText = "點擊按鈕抽取題目...";
+            document.getElementById('interview-answer-box').style.display = 'none';
+        }
+    }
+
+    // --- Mode A: Exam Logic ---
+    function renderExamDrills() {
+        const container = document.getElementById('drill-list');
+        container.innerHTML = '';
+        for(let i=1; i<=10; i++) {
+            const cacheId = `${appState.target}-${appState.subType}-${i}`;
+            const data = dataStore.examCache[cacheId];
+            let progress = 0;
+            let status = "未開始";
+            
+            if (data) {
+                const answered = data.q.filter(q => q.userAns !== undefined).length;
+                progress = (answered / 10) * 100;
+                status = progress === 100 ? "完成" : `${answered}/10`;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'drill-card';
             card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:start;">
-                    <h3 style="flex:1; margin-right:10px;">${essay.question.substring(0, 30)}...</h3>
-                    ${scoreDisplay}
-                </div>
-                <div class="essay-meta">
-                    <span>${new Date(essay.timestamp).toLocaleDateString()}</span>
-                    <span>${essay.grading ? '已閱卷' : '草稿'}</span>
-                </div>
+                <div><h3>第 ${i} 回</h3><p style="color:#7f8c8d; font-size:0.8rem; margin:5px 0 0;">${appState.subType === 'basic' ? '基礎題' : '進階題'}</p></div>
+                <div><div style="font-size:0.75rem; color:#999; display:flex; justify-content:space-between; margin-bottom:5px;"><span>${status}</span></div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${progress}%"></div></div></div>
             `;
-            card.onclick = () => openEssay(essay.id);
+            card.onclick = () => startExam(i);
             container.appendChild(card);
+        }
+    }
+
+    async function startExam(round) {
+        const cacheId = `${appState.target}-${appState.subType}-${round}`;
+        if (dataStore.examCache[cacheId]) {
+            renderQuiz(dataStore.examCache[cacheId].q, round);
+            document.getElementById('quiz-overlay').classList.add('active');
+        } else {
+            await fetchAI_Exam(round, cacheId);
+        }
+    }
+
+    async function fetchAI_Exam(round, cacheId) {
+        const apiKey = document.getElementById('api-key').value;
+        if(!apiKey) { alert('請輸入 API Key'); return; }
+        
+        document.getElementById('loading').style.display = 'flex';
+        document.getElementById('loading-text').innerText = "AI 正在生成國家考試級試題...";
+
+        const prompt = `Role: Examiner for Taiwan Civil Aviation Exam.
+        Generate 10 multiple-choice questions for Subject: '${appState.target}'.
+        Difficulty: ${appState.subType}.
+        Focus on Taiwan regulations (Civil Aviation Act) if applicable.
+        JSON Format: [{"q":"...","opts":["A","B","C","D"],"ans":0,"exp":"explanation"}]`;
+
+        try {
+            const res = await callGPT(apiKey, prompt);
+            const questions = JSON.parse(res);
+            dataStore.examCache[cacheId] = { q: questions, ts: Date.now() };
+            saveData();
+            renderExamDrills(); // update progress bar
+            renderQuiz(questions, round);
+            document.getElementById('quiz-overlay').classList.add('active');
+        } catch(e) { alert(e); }
+        finally { document.getElementById('loading').style.display = 'none'; }
+    }
+
+    function renderQuiz(questions, round) {
+        const container = document.getElementById('quiz-body');
+        document.getElementById('quiz-title').innerText = `${appState.target} - 第 ${round} 回`;
+        container.innerHTML = '';
+        
+        questions.forEach((q, idx) => {
+            const box = document.createElement('div');
+            box.className = 'q-box';
+            let html = `<div style="font-weight:bold; margin-bottom:15px; font-size:1.1rem;">Q${idx+1}. ${q.q}</div>`;
+            const isAns = q.userAns !== undefined;
+            q.opts.forEach((opt, optIdx) => {
+                let cls = 'opt-btn';
+                if(isAns) cls += (optIdx === q.ans ? ' correct' : (optIdx === q.userAns ? ' wrong' : ''));
+                html += `<button class="${cls}" onclick="checkExamAns(this, ${idx}, ${optIdx}, '${appState.target}-${appState.subType}-${round}')">${opt}</button>`;
+            });
+            html += `<div class="explanation" style="display:${isAns?'block':'none'}"><strong>解析：</strong>${q.exp}</div>`;
+            box.innerHTML = html;
+            container.appendChild(box);
         });
     }
 
-    // 2. 產生新的申論題目
-    async function createNewEssay() {
+    function checkExamAns(btn, qIdx, uIdx, cacheId) {
+        const data = dataStore.examCache[cacheId].q[qIdx];
+        if (data.userAns !== undefined) return; // already answered
+        
+        data.userAns = uIdx;
+        saveData();
+        
+        // Update UI locally
+        const parent = btn.parentElement;
+        const btns = parent.querySelectorAll('.opt-btn');
+        if (uIdx === data.ans) btn.classList.add('correct');
+        else {
+            btn.classList.add('wrong');
+            btns[data.ans].classList.add('correct');
+        }
+        parent.querySelector('.explanation').style.display = 'block';
+    }
+
+    // --- Mode A: Essay Logic ---
+    function renderEssayHistory() {
+        const container = document.getElementById('essay-history');
+        container.innerHTML = '';
+        const list = dataStore.examEssays.filter(e => e.subject === appState.target);
+        list.forEach(e => {
+            const div = document.createElement('div');
+            div.className = 'essay-card';
+            div.innerHTML = `<div>${e.q.substring(0,30)}...</div><div style="font-size:0.8rem; color:#999; margin-top:5px;">${e.grade ? '得分: '+e.grade.score : '未閱卷'}</div>`;
+            div.onclick = () => openEssay(e.id);
+            container.appendChild(div);
+        });
+    }
+
+    async function createEssay() {
         const apiKey = document.getElementById('api-key').value;
-        if(!apiKey) { alert('請輸入 API Key'); return; }
-
+        if(!apiKey) return alert("Key?");
         document.getElementById('loading').style.display = 'flex';
-        document.getElementById('loading-text').innerText = "AI 正在從題庫挑選申論題...";
-
-        const prompt = `You are an examiner for Taiwan's Civil Aviation Special Exam (民航特考).
-        Generate ONE single, high-quality Essay Question (申論題) for the subject: '${currentSubject}'.
-        Focus on specific regulations, theories, or complex scenarios suitable for a national exam.
-        Output ONLY the question text in Traditional Chinese.`;
-
+        
         try {
-            const res = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                body: JSON.stringify({ model: "gpt-4o-mini", messages: [{role: "user", content: prompt}], temperature: 0.8 })
-            });
-            const data = await res.json();
-            const questionText = data.choices[0].message.content.trim();
-            
-            // 建立新的一筆紀錄
-            const newEssay = {
-                id: Date.now().toString(),
-                subject: currentSubject,
-                timestamp: Date.now(),
-                question: questionText,
-                userAnswer: "",
-                grading: null
-            };
-            essayBook.push(newEssay);
+            const res = await callGPT(apiKey, `Generate ONE Essay Question for Taiwan Civil Aviation Exam, Subject: ${appState.target}. Output ONLY question text.`);
+            const newEssay = { id: Date.now(), subject: appState.target, q: res, ans: '', grade: null };
+            dataStore.examEssays.unshift(newEssay);
             saveData();
-            
-            openEssay(newEssay.id); // 直接打開
-
-        } catch (e) { alert("題目生成失敗: " + e.message); }
+            openEssay(newEssay.id);
+        } catch(e) { alert(e); }
         finally { document.getElementById('loading').style.display = 'none'; }
     }
 
-    // 3. 打開申論介面
     let activeEssayId = null;
     function openEssay(id) {
         activeEssayId = id;
-        const essay = essayBook.find(e => e.id === id);
+        const e = dataStore.examEssays.find(x => x.id === id);
+        document.getElementById('essay-q-display').innerText = e.q;
+        document.getElementById('essay-input').value = e.ans;
         
-        document.getElementById('essay-q-text').innerText = "Q: " + essay.question;
-        document.getElementById('essay-user-input').value = essay.userAnswer || "";
-        
-        const resultArea = document.getElementById('grading-result');
-        const inputArea = document.getElementById('essay-input-area');
-        
-        // 如果已經閱卷過，顯示結果，隱藏輸入框 (或允許重新編輯)
-        if (essay.grading) {
-            inputArea.style.display = 'none';
-            resultArea.style.display = 'block';
-            document.getElementById('score-val').innerText = essay.grading.score;
-            document.getElementById('grade-comment').innerHTML = essay.grading.comment.replace(/\n/g, '<br>');
-            document.getElementById('grade-model').innerText = essay.grading.modelAnswer;
+        const resDiv = document.getElementById('essay-result');
+        if(e.grade) {
+            resDiv.style.display = 'block';
+            resDiv.innerHTML = `<h2 style="color:#d35400">${e.grade.score}分</h2><p>${e.grade.comment}</p><div style="background:#eee; padding:10px; margin-top:10px;">${e.grade.model}</div>`;
         } else {
-            inputArea.style.display = 'block';
-            resultArea.style.display = 'none';
+            resDiv.style.display = 'none';
         }
-
-        document.getElementById('essay-view').classList.add('active');
+        document.getElementById('essay-overlay').classList.add('active');
     }
 
-    // 4. 提交並閱卷 (核心功能)
     async function submitEssay() {
-        const userAnswer = document.getElementById('essay-user-input').value.trim();
-        if(!userAnswer) { alert("請先輸入您的回答"); return; }
-        if(userAnswer.length < 20) { alert("回答太短了，無法進行有效評分"); return; }
-
-        const apiKey = document.getElementById('api-key').value;
-        const essay = essayBook.find(e => e.id === activeEssayId);
-        
-        // 儲存用戶答案
-        essay.userAnswer = userAnswer;
+        const ans = document.getElementById('essay-input').value;
+        if(!ans) return;
+        const e = dataStore.examEssays.find(x => x.id === activeEssayId);
+        e.ans = ans;
         saveData();
 
+        const apiKey = document.getElementById('api-key').value;
         document.getElementById('loading').style.display = 'flex';
-        document.getElementById('loading-text').innerText = "AI 閱卷老師正在批改中...\n(分析邏輯、法條引用、結構完整性)";
-
-        // 閱卷 Prompt
-        const gradePrompt = `
-        Role: Senior Grader for Taiwan Civil Aviation Exam.
-        Task: Grade the following student essay.
-        Subject: ${currentSubject}
-        Question: ${essay.question}
-        Student Answer: ${userAnswer}
-
-        Requirements:
-        1. Score the essay out of 25 (standard national exam format).
-        2. Provide constructive feedback (What is missing? Is the legal citation correct? Is the logic clear?).
-        3. Provide a "Model Answer" (擬答) that is perfect and standard.
-        
-        Output JSON Format ONLY:
-        {
-            "score": 18,
-            "comment": "評語...",
-            "modelAnswer": "擬答..."
-        }`;
+        document.getElementById('loading-text').innerText = "AI 閱卷中...";
 
         try {
-            const res = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                body: JSON.stringify({ model: "gpt-4o-mini", messages: [{role: "user", content: gradePrompt}], temperature: 0.5 })
-            });
-            const data = await res.json();
-            let content = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
-            const gradingResult = JSON.parse(content);
-
-            // 儲存結果
-            essay.grading = gradingResult;
+            const prompt = `Grade this essay for Taiwan Civil Aviation Exam. Question: ${e.q}. Answer: ${ans}. Return JSON: {"score": 0-25, "comment": "string", "model": "model_answer"}`;
+            const res = await callGPT(apiKey, prompt);
+            e.grade = JSON.parse(res);
             saveData();
-            
-            // 重新渲染介面
             openEssay(activeEssayId);
-            renderEssayList(); // 更新列表狀態
-
-        } catch (e) { alert("閱卷失敗: " + e.message); }
+            renderEssayHistory();
+        } catch(err) { alert(err); }
         finally { document.getElementById('loading').style.display = 'none'; }
+    }
+
+
+    // --- Mode B: Interview Logic ---
+    let currentInterviewQ = "";
+
+    async function generateInterviewQ() {
+        const apiKey = document.getElementById('api-key').value;
+        if(!apiKey) return alert("Key?");
+        document.getElementById('loading').style.display = 'flex';
+        document.getElementById('loading-text').innerText = "面試官正在翻閱履歷...";
+
+        // Engineer Prompts differ from Cabin Crew
+        let detail = "";
+        if (appState.target === 'Engineer') {
+            detail = `Role: Airline Chief Engineer. Ask a ${appState.subType} question. Include technical scenarios.`;
+        } else {
+            detail = `Role: Airline Recruiter. Ask a ${appState.subType} question for ${appState.target}.`;
+        }
+
+        const prompt = `${detail} Output: Question in English, then Chinese translation. Plain text.`;
+
+        try {
+            const res = await callGPT(apiKey, prompt);
+            currentInterviewQ = res;
+            document.getElementById('interview-q-text').innerText = res;
+            document.getElementById('interview-answer-box').style.display = 'block';
+            document.getElementById('interview-feedback').style.display = 'none';
+            document.getElementById('interview-input').value = '';
+        } catch(e) { alert(e); }
+        finally { document.getElementById('loading').style.display = 'none'; }
+    }
+
+    async function analyzeInterview() {
+        const ans = document.getElementById('interview-input').value;
+        if(!ans) return;
+        const apiKey = document.getElementById('api-key').value;
+        document.getElementById('loading').style.display = 'flex';
+        
+        const prompt = `Evaluate this answer for ${appState.target} interview. Question: ${currentInterviewQ}. Answer: ${ans}. 
+        Provide Feedback (Chinese) and a Better Version (English).`;
+
+        try {
+            const res = await callGPT(apiKey, prompt);
+            const fbBox = document.getElementById('interview-feedback');
+            fbBox.style.display = 'block';
+            fbBox.innerHTML = res.replace(/\n/g, '<br>');
+        } catch(e) { alert(e); }
+        finally { document.getElementById('loading').style.display = 'none'; }
+    }
+    
+    function startVoice() {
+        if (!('webkitSpeechRecognition' in window)) return alert("請使用 Chrome");
+        const r = new webkitSpeechRecognition();
+        r.lang = 'en-US';
+        r.start();
+        r.onresult = (e) => { document.getElementById('interview-input').value += e.results[0][0].transcript + " "; }
+    }
+
+
+    // --- Helper: API Call ---
+    async function callGPT(key, prompt) {
+        const req = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [{role: "user", content: prompt}],
+                temperature: 0.7
+            })
+        });
+        const data = await req.json();
+        if(data.error) throw new Error(data.error.message);
+        return data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
     }
 
     function closeOverlay(id) {
         document.getElementById(id).classList.remove('active');
-        if(id === 'essay-view') renderEssayList(); // 關閉時刷新列表
-    }
-
-    function renderMistakeList() {
-        // (此處省略錯題本渲染代碼以保持簡潔，可參考上一版)
-        document.getElementById('mistake-list').innerHTML = "<div style='text-align:center; padding:20px; color:#999'>錯題本功能僅支援選擇題</div>";
+        if (id === 'essay-overlay') renderEssayHistory();
+        if (id === 'quiz-overlay') renderExamDrills();
     }
 </script>
 
