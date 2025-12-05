@@ -3,22 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>航空職涯全方位特訓中心</title>
+    <title>航空工程師招募特訓</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            /* 整合版配色：深空藍 (筆試) + 跑道灰 (面試) + 金色 (榮耀) */
-            --sidebar-bg: #1c2331; 
-            --sidebar-header: #0d1117;
-            --main-bg: #f4f5f7;
-            --exam-color: #2c3e50; /* 筆試主色 */
-            --interview-color: #c0392b; /* 面試主色 (熱情/緊急) */
-            --tech-color: #2980b9; /* 技術主色 */
-            --text: #333;
-            --accent: #f1c40f;
+            /* 工業風配色：藍圖藍、警示黃、機械灰 */
+            --sidebar-bg: #2c3e50; 
+            --sidebar-text: #bdc3c7;
+            --main-bg: #f4f7f6;
+            --exam-color: #34495e; 
+            --interview-color: #d35400; 
+            --accent: #f39c12;
+            --text: #2c3e50;
         }
 
-        /* 核心設定：鎖定頁面，適合平板 */
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; position: fixed;
@@ -29,36 +27,34 @@
         .layout { display: flex; width: 100%; height: 100%; position: relative; }
         .overlay-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 90; display: none; }
 
-        /* --- Sidebar --- */
+        /* Sidebar */
         .sidebar {
-            width: 260px; background: var(--sidebar-bg); color: #bdc3c7;
+            width: 260px; background: var(--sidebar-bg); color: var(--sidebar-text);
             display: flex; flex-direction: column; padding: 0; flex-shrink: 0;
             z-index: 100; transition: transform 0.3s ease;
-            overflow-y: auto; -webkit-overflow-scrolling: touch;
+            overflow-y: auto;
         }
         .sidebar-header { 
-            padding: 25px 20px; background: var(--sidebar-header); text-align: center;
-            font-weight: bold; font-size: 1.1rem; color: #fff; letter-spacing: 1px; border-bottom: 1px solid #34495e;
+            padding: 25px 20px; text-align: center; font-weight: bold; font-size: 1.1rem; 
+            color: #fff; border-bottom: 1px solid #465c6f; background: #243342;
         }
         .section-title {
             padding: 15px 20px 5px; font-size: 0.75rem; text-transform: uppercase; 
-            color: #5d6d7e; font-weight: bold; letter-spacing: 1px; margin-top: 10px;
+            color: #7f8c8d; font-weight: bold; margin-top: 10px;
         }
         .nav-item { 
             padding: 12px 20px; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; 
-            font-size: 0.9rem; display: flex; align-items: center; 
+            font-size: 0.95rem; display: flex; align-items: center; 
         }
         .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
         .nav-item.active { background: rgba(255,255,255,0.1); color: #fff; font-weight: bold; }
-        
-        /* 不同模式的 Active 顏色 */
         .nav-item.exam-active { border-left-color: var(--accent); }
         .nav-item.interview-active { border-left-color: var(--interview-color); }
         
-        .api-area { padding: 20px; margin-top: auto; border-top: 1px solid #34495e; }
-        .api-input { width: 100%; padding: 10px; border-radius: 4px; border: none; background: #0d1117; color: white; border: 1px solid #34495e; }
+        .api-area { padding: 20px; margin-top: auto; border-top: 1px solid #465c6f; }
+        .api-input { width: 100%; padding: 10px; border-radius: 4px; border: none; background: #1a252f; color: white; border: 1px solid #465c6f; }
 
-        /* --- Main Content --- */
+        /* Main Content */
         .main-content {
             flex: 1; display: flex; flex-direction: column; width: 100%;
             position: relative; overflow: hidden;
@@ -69,46 +65,33 @@
             border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
         }
         .menu-btn { display: none; font-size: 24px; cursor: pointer; border: none; background: none; color: #333; margin-right: 10px; }
-        
-        .mode-badge {
-            padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; color: white; margin-left: 10px;
-        }
-
-        /* Tabs */
-        .category-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
-        .category-tabs button {
-            background: #fff; border: 1px solid #bdc3c7; padding: 6px 14px;
-            cursor: pointer; border-radius: 4px; font-size: 0.9rem; white-space: nowrap; transition: 0.2s; color: #555;
-        }
-        .category-tabs button.active { background: var(--exam-color); color: white; border-color: var(--exam-color); }
-        /* 面試模式下的 Tab 顏色 */
-        .interview-mode .category-tabs button.active { background: var(--interview-color); border-color: var(--interview-color); }
+        .mode-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; color: white; margin-left: 10px; }
 
         /* Scroll Container */
         .scroll-container {
             flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-            padding: 20px; padding-bottom: 80px; overscroll-behavior: contain;
+            padding: 20px; padding-bottom: 80px;
         }
 
-        /* --- View: Exam (Grid) --- */
+        /* Exam Grid */
         .drill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
         .drill-card {
             background: white; border-radius: 8px; padding: 20px; cursor: pointer;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-top: 4px solid transparent;
-            display: flex; flex-direction: column; justify-content: space-between; height: 110px;
+            display: flex; flex-direction: column; justify-content: space-between; height: 100px;
             transition: transform 0.2s;
         }
         .drill-card:hover { transform: translateY(-3px); border-top-color: var(--accent); }
         .progress-bar-bg { width: 100%; height: 4px; background: #eee; margin-top: auto; border-radius: 2px; overflow:hidden; }
         .progress-bar-fill { height: 100%; background: #27ae60; width: 0%; }
 
-        /* --- View: Interview (Card) --- */
+        /* Interview View */
         .interview-view { max-width: 800px; margin: 0 auto; display: none; }
         .question-card {
             background: white; border-radius: 8px; padding: 30px; text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 5px solid var(--interview-color);
         }
-        .q-text { font-size: 1.3rem; font-weight: bold; margin: 20px 0; color: #333; font-family: "Georgia", serif; }
+        .q-text { font-size: 1.3rem; font-weight: bold; margin: 20px 0; color: #333; }
         .action-btn {
             background: var(--exam-color); color: white; border: none; padding: 12px 25px;
             border-radius: 30px; font-size: 1rem; cursor: pointer; font-weight: bold;
@@ -116,12 +99,11 @@
         }
         .action-btn.interview-btn { background: var(--interview-color); }
         
-        .answer-section { background: white; border-radius: 8px; padding: 20px; display: none; margin-top: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .answer-section { background: white; border-radius: 8px; padding: 20px; display: none; margin-top: 20px; }
         .input-box { width: 100%; height: 150px; padding: 15px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; margin-bottom: 10px; font-size: 1rem; box-sizing: border-box; }
-        
-        .feedback-box { background: #fff; border-left: 4px solid var(--accent); padding: 20px; margin-top: 20px; display: none; line-height: 1.6; }
+        .feedback-box { background: #fff; border-left: 4px solid var(--accent); padding: 20px; margin-top: 20px; display: none; line-height: 1.6; white-space: pre-wrap; }
 
-        /* --- Common Elements --- */
+        /* Overlays */
         .loading-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255,255,255,0.95); display: none;
@@ -129,7 +111,6 @@
         }
         .spinner { width: 40px; height: 40px; border: 4px solid #ddd; border-top-color: var(--exam-color); border-radius: 50%; animation: spin 0.8s linear infinite; }
         
-        /* Quiz Overlay (Exam) */
         .quiz-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #f8f9fa; z-index: 200; display: none; flex-direction: column;
@@ -138,14 +119,10 @@
         .quiz-header { padding: 0 20px; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
         .quiz-body { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; padding-bottom: 80px; }
         .q-box { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .opt-btn { width: 100%; text-align: left; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; background: white; border-radius: 6px; }
+        .opt-btn { width: 100%; text-align: left; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer; }
         .opt-btn.correct { background: #d4edda; border-color: #27ae60; }
         .opt-btn.wrong { background: #f8d7da; border-color: #c0392b; }
         .explanation { background: #e8f4fd; padding: 15px; margin-top: 10px; border-radius: 6px; display: none; }
-        
-        /* Essay Overlay */
-        .essay-container { display: none; }
-        .essay-card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #d35400; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -163,21 +140,18 @@
     <div class="overlay-backdrop" onclick="toggleSidebar()"></div>
 
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">✈️ 航空職涯特訓</div>
+        <div class="sidebar-header">🛠️ 工程師招募特訓</div>
         
-        <!-- 筆試區塊 -->
-        <div class="section-title">📝 航空特考 (筆試)</div>
-        <div class="nav-item exam-active active" onclick="switchMode('exam', '民用航空法', this)">民用航空法</div>
-        <div class="nav-item exam-active" onclick="switchMode('exam', '飛航管制', this)">飛航管制</div>
-        <div class="nav-item exam-active" onclick="switchMode('exam', '航空氣象學', this)">航空氣象學</div>
-        <div class="nav-item exam-active" onclick="switchMode('exam', '空氣動力學', this)">空氣動力學</div>
+        <div class="section-title">📝 招募筆試 (Aptitude)</div>
+        <div class="nav-item exam-active active" onclick="switchMode('exam', '物理', this)">物理 (Physics)</div>
+        <div class="nav-item exam-active" onclick="switchMode('exam', '數學', this)">數學 (Math)</div>
+        <div class="nav-item exam-active" onclick="switchMode('exam', '邏輯測驗', this)">邏輯 (Logic)</div>
+        <div class="nav-item exam-active" onclick="switchMode('exam', '航空英文', this)">英文 (English)</div>
 
-        <!-- 面試區塊 -->
-        <div class="section-title">🎙️ 職位面試 (口試)</div>
-        <div class="nav-item interview-active" onclick="switchMode('interview', 'Cabin Crew', this)">💃 空服員 (Cabin)</div>
-        <div class="nav-item interview-active" onclick="switchMode('interview', 'Ground Staff', this)">🎫 地勤 (Ground)</div>
-        <div class="nav-item interview-active" onclick="switchMode('interview', 'Pilot', this)">👨‍✈️ 機師 (Pilot)</div>
-        <div class="nav-item interview-active" onclick="switchMode('interview', 'Engineer', this)">🛠️ 工程師 (Tech)</div>
+        <div class="section-title">🎙️ 招募面試 (Interview)</div>
+        <div class="nav-item interview-active" onclick="switchMode('interview', 'General', this)">個人特質 (HR)</div>
+        <div class="nav-item interview-active" onclick="switchMode('interview', 'Technical', this)">維修觀念 (Tech)</div>
+        <div class="nav-item interview-active" onclick="switchMode('interview', 'English', this)">英文口說 (Speaking)</div>
 
         <div class="api-area">
             <label style="color:#7f8c8d; font-size:0.8rem; font-weight:bold;">API Key</label>
@@ -190,104 +164,66 @@
             <div style="display:flex; align-items:center;">
                 <button class="menu-btn" onclick="toggleSidebar()">☰</button>
                 <div>
-                    <h3 id="top-title" style="margin:0; font-size:1.1rem; display:inline-block;">民用航空法</h3>
+                    <h3 id="top-title" style="margin:0; font-size:1.1rem; display:inline-block;">物理</h3>
                     <span id="mode-badge" class="mode-badge" style="background:var(--exam-color)">筆試模式</span>
                 </div>
-            </div>
-            
-            <!-- Dynamic Tabs -->
-            <div class="category-tabs" id="tabs-container">
-                <!-- Javascript will inject buttons here -->
             </div>
         </div>
 
         <div class="scroll-container">
-            
-            <!-- 1. 筆試介面 (Grid) -->
+            <!-- 1. 筆試介面 -->
             <div id="exam-view" style="display:block;">
                 <div id="drill-list" class="drill-grid"></div>
-                <div id="essay-list" class="essay-container">
-                    <button onclick="createEssay()" style="width:100%; padding:15px; margin-bottom:20px; background:white; border:2px dashed #999; color:#555; border-radius:8px; font-weight:bold;">+ 產生新申論題</button>
-                    <div id="essay-history"></div>
-                </div>
             </div>
 
-            <!-- 2. 面試介面 (Card) -->
+            <!-- 2. 面試介面 -->
             <div id="interview-view" class="interview-view" style="display:none;">
                 <div class="question-card">
-                    <div style="color:#999; font-size:0.9rem; margin-bottom:10px;" id="interview-q-type">READY?</div>
-                    <div class="q-text" id="interview-q-text">請點擊下方按鈕，開始模擬面試。</div>
-                    <button class="action-btn interview-btn" onclick="generateInterviewQ()">🎲 抽取題目</button>
+                    <div style="color:#999; font-size:0.9rem; margin-bottom:10px;">INTERVIEW SIMULATION</div>
+                    <div class="q-text" id="interview-q-text">準備好接受工程師面試挑戰了嗎？</div>
+                    <button class="action-btn interview-btn" onclick="generateInterviewQ()">🎲 抽取面試題</button>
                 </div>
 
                 <div id="interview-answer-box" class="answer-section">
-                    <h4 style="margin-top:0;">Your Answer (Draft/Notes)</h4>
-                    <textarea id="interview-input" class="input-box" placeholder="Type or use voice input..."></textarea>
+                    <h4 style="margin-top:0;">Answer Draft</h4>
+                    <textarea id="interview-input" class="input-box" placeholder="Write your answer here..."></textarea>
                     <div style="display:flex; gap:10px;">
                         <button class="action-btn interview-btn" onclick="analyzeInterview()">✨ 提交分析</button>
-                        <button class="action-btn" style="background:#fff; color:#333; border:1px solid #ccc;" onclick="startVoice()">🎙️ 語音</button>
                     </div>
                     <div id="interview-feedback" class="feedback-box"></div>
                 </div>
             </div>
-
         </div>
 
-        <!-- Overlays -->
+        <!-- Loading -->
         <div id="loading" class="loading-overlay">
             <div class="spinner"></div>
-            <p id="loading-text" style="margin-top:20px; font-weight:bold; color:#555;">AI 正在準備試題...</p>
+            <p id="loading-text" style="margin-top:20px; font-weight:bold; color:#555;">AI 正在出題中...</p>
         </div>
 
+        <!-- Quiz Overlay -->
         <div id="quiz-overlay" class="quiz-overlay">
             <div class="quiz-header">
-                <h3 id="quiz-title">模擬測驗</h3>
+                <h3 id="quiz-title">測驗</h3>
                 <button onclick="closeOverlay('quiz-overlay')" style="font-size:1.5rem; background:none; border:none;">✕</button>
             </div>
             <div id="quiz-body" class="quiz-body"></div>
-        </div>
-        
-        <div id="essay-overlay" class="quiz-overlay">
-            <div class="quiz-header">
-                <h3>申論閱卷</h3>
-                <button onclick="closeOverlay('essay-overlay')" style="font-size:1.5rem; background:none; border:none;">✕</button>
-            </div>
-            <div id="essay-body" class="quiz-body">
-                <div class="q-box" style="font-weight:bold;" id="essay-q-display"></div>
-                <textarea id="essay-input" class="input-box" style="height:300px;" placeholder="作答區..."></textarea>
-                <button class="action-btn" style="width:100%;" onclick="submitEssay()">提交閱卷</button>
-                <div id="essay-result" class="feedback-box" style="display:none;"></div>
-            </div>
         </div>
 
     </main>
 </div>
 
 <script>
-    // --- State Management ---
-    let appState = {
-        mode: 'exam', // 'exam' or 'interview'
-        target: '民用航空法', // Subject or Role
-        subType: 'basic', // 'basic'/'advanced' or 'behavioral'/'technical'
-    };
+    // State
+    let appState = { mode: 'exam', target: '物理' };
+    let dataStore = { examCache: {} };
+    const STORAGE_KEY = 'airline_recruit_data';
 
-    let dataStore = {
-        examCache: {},
-        examEssays: [],
-        interviewHistory: []
-    };
-
-    const STORAGE_KEY = 'aviation_hub_data';
-
-    // --- Init ---
     window.onload = function() {
         const key = localStorage.getItem('jlpt_api_key');
         if(key) document.getElementById('api-key').value = key;
-        
         const savedData = localStorage.getItem(STORAGE_KEY);
         if(savedData) dataStore = JSON.parse(savedData);
-
-        renderTabs();
         renderContent();
     }
 
@@ -298,114 +234,48 @@
         document.querySelector('.overlay-backdrop').classList.toggle('open');
     }
 
-    // --- Core Navigation ---
+    // Switch Logic
     function switchMode(mode, target, btn) {
         appState.mode = mode;
         appState.target = target;
         
-        // Update Sidebar UI
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         btn.classList.add('active');
 
-        // Reset subType to default
-        appState.subType = (mode === 'exam') ? 'basic' : 'behavioral';
-        if(target === 'Engineer' && mode === 'interview') appState.subType = 'troubleshooting';
-
-        // Update Top Bar UI
         document.getElementById('top-title').innerText = target;
         const badge = document.getElementById('mode-badge');
         badge.innerText = (mode === 'exam') ? '筆試模式' : '面試模式';
         badge.style.background = (mode === 'exam') ? 'var(--exam-color)' : 'var(--interview-color)';
-        document.getElementById('main-content').className = (mode === 'interview') ? 'main-content interview-mode' : 'main-content';
-
-        renderTabs();
-        renderContent();
         
+        renderContent();
         if(window.innerWidth <= 768) toggleSidebar();
-    }
-
-    function switchTab(type, btn) {
-        appState.subType = type;
-        document.querySelectorAll('.category-tabs button').forEach(el => el.classList.remove('active'));
-        btn.classList.add('active');
-        renderContent();
-    }
-
-    function renderTabs() {
-        const container = document.getElementById('tabs-container');
-        container.innerHTML = '';
-        
-        if (appState.mode === 'exam') {
-            const types = [
-                {id: 'basic', name: '基礎測驗'},
-                {id: 'advanced', name: '進階應用'},
-                {id: 'essay', name: '申論演練'}
-            ];
-            types.forEach(t => {
-                container.innerHTML += `<button class="${appState.subType === t.id ? 'active' : ''}" onclick="switchTab('${t.id}', this)">${t.name}</button>`;
-            });
-        } else {
-            // Interview Tabs
-            let types = [];
-            if (appState.target === 'Engineer') {
-                types = [
-                    {id: 'troubleshooting', name: '故障排除'},
-                    {id: 'knowledge', name: '系統知識'},
-                    {id: 'regulatory', name: '法規手冊'}
-                ];
-            } else {
-                types = [
-                    {id: 'behavioral', name: '行為情境 (STAR)'},
-                    {id: 'personal', name: '個人題'},
-                    {id: 'broadcast', name: '廣播詞/英文'}
-                ];
-            }
-            types.forEach(t => {
-                container.innerHTML += `<button class="${appState.subType === t.id ? 'active' : ''}" onclick="switchTab('${t.id}', this)">${t.name}</button>`;
-            });
-        }
     }
 
     function renderContent() {
         const examView = document.getElementById('exam-view');
         const interviewView = document.getElementById('interview-view');
-        const drillList = document.getElementById('drill-list');
-        const essayList = document.getElementById('essay-list');
 
         if (appState.mode === 'exam') {
             interviewView.style.display = 'none';
             examView.style.display = 'block';
-
-            if (appState.subType === 'essay') {
-                drillList.style.display = 'none';
-                essayList.style.display = 'block';
-                renderEssayHistory();
-            } else {
-                drillList.style.display = 'grid';
-                essayList.style.display = 'none';
-                renderExamDrills();
-            }
+            renderExamDrills();
         } else {
             examView.style.display = 'none';
             interviewView.style.display = 'block';
-            
-            // Reset Interview View text
-            document.getElementById('interview-q-type').innerText = `${appState.target} - ${appState.subType}`;
-            // document.getElementById('interview-q-text').innerText = "點擊按鈕抽取題目...";
             document.getElementById('interview-answer-box').style.display = 'none';
+            document.getElementById('interview-q-text').innerText = "點擊按鈕抽取題目...";
         }
     }
 
-    // --- Mode A: Exam Logic ---
+    // --- Exam Logic ---
     function renderExamDrills() {
         const container = document.getElementById('drill-list');
         container.innerHTML = '';
         for(let i=1; i<=10; i++) {
-            const cacheId = `${appState.target}-${appState.subType}-${i}`;
+            const cacheId = `${appState.target}-${i}`;
             const data = dataStore.examCache[cacheId];
             let progress = 0;
             let status = "未開始";
-            
             if (data) {
                 const answered = data.q.filter(q => q.userAns !== undefined).length;
                 progress = (answered / 10) * 100;
@@ -415,8 +285,8 @@
             const card = document.createElement('div');
             card.className = 'drill-card';
             card.innerHTML = `
-                <div><h3>第 ${i} 回</h3><p style="color:#7f8c8d; font-size:0.8rem; margin:5px 0 0;">${appState.subType === 'basic' ? '基礎題' : '進階題'}</p></div>
-                <div><div style="font-size:0.75rem; color:#999; display:flex; justify-content:space-between; margin-bottom:5px;"><span>${status}</span></div>
+                <div><h3>Test ${i}</h3><p style="color:#7f8c8d; font-size:0.8rem; margin:5px 0 0;">${appState.target}</p></div>
+                <div><div style="font-size:0.75rem; color:#999; margin-bottom:5px;">${status}</div>
                 <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${progress}%"></div></div></div>
             `;
             card.onclick = () => startExam(i);
@@ -425,7 +295,7 @@
     }
 
     async function startExam(round) {
-        const cacheId = `${appState.target}-${appState.subType}-${round}`;
+        const cacheId = `${appState.target}-${round}`;
         if (dataStore.examCache[cacheId]) {
             renderQuiz(dataStore.examCache[cacheId].q, round);
             document.getElementById('quiz-overlay').classList.add('active');
@@ -439,40 +309,45 @@
         if(!apiKey) { alert('請輸入 API Key'); return; }
         
         document.getElementById('loading').style.display = 'flex';
-        document.getElementById('loading-text').innerText = "AI 正在生成國家考試級試題...";
+        
+        // --- 特化指令：針對航空公司招募筆試 ---
+        let promptDetail = "";
+        if (appState.target === '物理') promptDetail = "Level: High School to College Freshman Physics. Topics: Mechanics (Newton's laws, levers, pulleys), Basic Electricity (Ohm's law, circuits), Thermodynamics, Fluid Dynamics (Bernoulli). 10 multiple-choice questions.";
+        if (appState.target === '數學') promptDetail = "Level: High School Math. Topics: Basic Calculus (derivatives), Trigonometry, Vectors, Probability, Arithmetic reasoning. 10 multiple-choice questions.";
+        if (appState.target === '邏輯測驗') promptDetail = "Generate 10 Logic/IQ Test questions. Topics: Number Series, Verbal Analogies, Logical Reasoning (Syllogism). Avoid image-based puzzles, use text descriptions.";
+        if (appState.target === '航空英文') promptDetail = "Generate 10 TOEIC-style questions but focused on Aviation context (Maintenance, Tools, Safety, Airport). Reading comprehension or Grammar.";
 
-        const prompt = `Role: Examiner for Taiwan Civil Aviation Exam.
-        Generate 10 multiple-choice questions for Subject: '${appState.target}'.
-        Difficulty: ${appState.subType}.
-        Focus on Taiwan regulations (Civil Aviation Act) if applicable.
-        JSON Format: [{"q":"...","opts":["A","B","C","D"],"ans":0,"exp":"explanation"}]`;
+        const prompt = `Role: Airline Recruitment Exam Creator.
+        Target: Trainee Aircraft Maintenance Engineer (培訓飛機維修工程師).
+        ${promptDetail}
+        Format: JSON Array [{"q":"Question","opts":["A","B","C","D"],"ans":0,"exp":"Explanation in Traditional Chinese"}]`;
 
         try {
             const res = await callGPT(apiKey, prompt);
             const questions = JSON.parse(res);
             dataStore.examCache[cacheId] = { q: questions, ts: Date.now() };
             saveData();
-            renderExamDrills(); // update progress bar
+            renderExamDrills();
             renderQuiz(questions, round);
             document.getElementById('quiz-overlay').classList.add('active');
-        } catch(e) { alert(e); }
+        } catch(e) { alert("生成失敗：" + e.message); }
         finally { document.getElementById('loading').style.display = 'none'; }
     }
 
     function renderQuiz(questions, round) {
         const container = document.getElementById('quiz-body');
-        document.getElementById('quiz-title').innerText = `${appState.target} - 第 ${round} 回`;
+        document.getElementById('quiz-title').innerText = `${appState.target} - Test ${round}`;
         container.innerHTML = '';
         
         questions.forEach((q, idx) => {
             const box = document.createElement('div');
             box.className = 'q-box';
-            let html = `<div style="font-weight:bold; margin-bottom:15px; font-size:1.1rem;">Q${idx+1}. ${q.q}</div>`;
+            let html = `<div style="font-weight:bold; margin-bottom:15px; font-size:1.1rem; color:#34495e;">Q${idx+1}. ${q.q}</div>`;
             const isAns = q.userAns !== undefined;
             q.opts.forEach((opt, optIdx) => {
                 let cls = 'opt-btn';
                 if(isAns) cls += (optIdx === q.ans ? ' correct' : (optIdx === q.userAns ? ' wrong' : ''));
-                html += `<button class="${cls}" onclick="checkExamAns(this, ${idx}, ${optIdx}, '${appState.target}-${appState.subType}-${round}')">${opt}</button>`;
+                html += `<button class="${cls}" onclick="checkExamAns(this, ${idx}, ${optIdx}, '${appState.target}-${round}')">${opt}</button>`;
             });
             html += `<div class="explanation" style="display:${isAns?'block':'none'}"><strong>解析：</strong>${q.exp}</div>`;
             box.innerHTML = html;
@@ -482,109 +357,32 @@
 
     function checkExamAns(btn, qIdx, uIdx, cacheId) {
         const data = dataStore.examCache[cacheId].q[qIdx];
-        if (data.userAns !== undefined) return; // already answered
-        
+        if (data.userAns !== undefined) return;
         data.userAns = uIdx;
         saveData();
-        
-        // Update UI locally
         const parent = btn.parentElement;
         const btns = parent.querySelectorAll('.opt-btn');
         if (uIdx === data.ans) btn.classList.add('correct');
-        else {
-            btn.classList.add('wrong');
-            btns[data.ans].classList.add('correct');
-        }
+        else { btn.classList.add('wrong'); btns[data.ans].classList.add('correct'); }
         parent.querySelector('.explanation').style.display = 'block';
     }
 
-    // --- Mode A: Essay Logic ---
-    function renderEssayHistory() {
-        const container = document.getElementById('essay-history');
-        container.innerHTML = '';
-        const list = dataStore.examEssays.filter(e => e.subject === appState.target);
-        list.forEach(e => {
-            const div = document.createElement('div');
-            div.className = 'essay-card';
-            div.innerHTML = `<div>${e.q.substring(0,30)}...</div><div style="font-size:0.8rem; color:#999; margin-top:5px;">${e.grade ? '得分: '+e.grade.score : '未閱卷'}</div>`;
-            div.onclick = () => openEssay(e.id);
-            container.appendChild(div);
-        });
-    }
-
-    async function createEssay() {
-        const apiKey = document.getElementById('api-key').value;
-        if(!apiKey) return alert("Key?");
-        document.getElementById('loading').style.display = 'flex';
-        
-        try {
-            const res = await callGPT(apiKey, `Generate ONE Essay Question for Taiwan Civil Aviation Exam, Subject: ${appState.target}. Output ONLY question text.`);
-            const newEssay = { id: Date.now(), subject: appState.target, q: res, ans: '', grade: null };
-            dataStore.examEssays.unshift(newEssay);
-            saveData();
-            openEssay(newEssay.id);
-        } catch(e) { alert(e); }
-        finally { document.getElementById('loading').style.display = 'none'; }
-    }
-
-    let activeEssayId = null;
-    function openEssay(id) {
-        activeEssayId = id;
-        const e = dataStore.examEssays.find(x => x.id === id);
-        document.getElementById('essay-q-display').innerText = e.q;
-        document.getElementById('essay-input').value = e.ans;
-        
-        const resDiv = document.getElementById('essay-result');
-        if(e.grade) {
-            resDiv.style.display = 'block';
-            resDiv.innerHTML = `<h2 style="color:#d35400">${e.grade.score}分</h2><p>${e.grade.comment}</p><div style="background:#eee; padding:10px; margin-top:10px;">${e.grade.model}</div>`;
-        } else {
-            resDiv.style.display = 'none';
-        }
-        document.getElementById('essay-overlay').classList.add('active');
-    }
-
-    async function submitEssay() {
-        const ans = document.getElementById('essay-input').value;
-        if(!ans) return;
-        const e = dataStore.examEssays.find(x => x.id === activeEssayId);
-        e.ans = ans;
-        saveData();
-
-        const apiKey = document.getElementById('api-key').value;
-        document.getElementById('loading').style.display = 'flex';
-        document.getElementById('loading-text').innerText = "AI 閱卷中...";
-
-        try {
-            const prompt = `Grade this essay for Taiwan Civil Aviation Exam. Question: ${e.q}. Answer: ${ans}. Return JSON: {"score": 0-25, "comment": "string", "model": "model_answer"}`;
-            const res = await callGPT(apiKey, prompt);
-            e.grade = JSON.parse(res);
-            saveData();
-            openEssay(activeEssayId);
-            renderEssayHistory();
-        } catch(err) { alert(err); }
-        finally { document.getElementById('loading').style.display = 'none'; }
-    }
-
-
-    // --- Mode B: Interview Logic ---
+    // --- Interview Logic ---
     let currentInterviewQ = "";
-
     async function generateInterviewQ() {
         const apiKey = document.getElementById('api-key').value;
         if(!apiKey) return alert("Key?");
         document.getElementById('loading').style.display = 'flex';
-        document.getElementById('loading-text').innerText = "面試官正在翻閱履歷...";
 
-        // Engineer Prompts differ from Cabin Crew
+        // 面試指令優化
         let detail = "";
-        if (appState.target === 'Engineer') {
-            detail = `Role: Airline Chief Engineer. Ask a ${appState.subType} question. Include technical scenarios.`;
-        } else {
-            detail = `Role: Airline Recruiter. Ask a ${appState.subType} question for ${appState.target}.`;
-        }
+        if (appState.target === 'General') detail = "Ask a common HR behavioral question (e.g., Teamwork, Conflict, Why this airline?, Strengths/Weaknesses).";
+        if (appState.target === 'Technical') detail = "Ask a basic technical question suitable for Trainee Engineers (e.g., 'How does a jet engine work?', 'What is a torque wrench?', 'Why do you want to be a mechanic?'). Not too advanced.";
+        if (appState.target === 'English') detail = "Ask a conversation starter or a simple reading passage to test English speaking ability.";
 
-        const prompt = `${detail} Output: Question in English, then Chinese translation. Plain text.`;
+        const prompt = `Role: Airline Interviewer for Trainee Maintenance Engineer.
+        ${detail}
+        Output: Question in English followed by Chinese translation.`;
 
         try {
             const res = await callGPT(apiKey, prompt);
@@ -603,8 +401,17 @@
         const apiKey = document.getElementById('api-key').value;
         document.getElementById('loading').style.display = 'flex';
         
-        const prompt = `Evaluate this answer for ${appState.target} interview. Question: ${currentInterviewQ}. Answer: ${ans}. 
-        Provide Feedback (Chinese) and a Better Version (English).`;
+        const prompt = `Role: Airline Recruiter.
+        Target: Trainee Maintenance Engineer.
+        Question: ${currentInterviewQ}
+        Answer: ${ans}
+        
+        Evaluate based on:
+        1. Safety awareness (重要)
+        2. Teamwork & Stability (輪班意願)
+        3. Logical clarity.
+        
+        Output: Feedback (Chinese) + Refined Answer (English).`;
 
         try {
             const res = await callGPT(apiKey, prompt);
@@ -614,26 +421,12 @@
         } catch(e) { alert(e); }
         finally { document.getElementById('loading').style.display = 'none'; }
     }
-    
-    function startVoice() {
-        if (!('webkitSpeechRecognition' in window)) return alert("請使用 Chrome");
-        const r = new webkitSpeechRecognition();
-        r.lang = 'en-US';
-        r.start();
-        r.onresult = (e) => { document.getElementById('interview-input').value += e.results[0][0].transcript + " "; }
-    }
 
-
-    // --- Helper: API Call ---
     async function callGPT(key, prompt) {
         const req = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-            body: JSON.stringify({
-                model: "gpt-4o-mini",
-                messages: [{role: "user", content: prompt}],
-                temperature: 0.7
-            })
+            body: JSON.stringify({ model: "gpt-4o-mini", messages: [{role: "user", content: prompt}], temperature: 0.7 })
         });
         const data = await req.json();
         if(data.error) throw new Error(data.error.message);
@@ -642,8 +435,7 @@
 
     function closeOverlay(id) {
         document.getElementById(id).classList.remove('active');
-        if (id === 'essay-overlay') renderEssayHistory();
-        if (id === 'quiz-overlay') renderExamDrills();
+        if(id === 'quiz-overlay') renderExamDrills();
     }
 </script>
 
